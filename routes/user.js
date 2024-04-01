@@ -6,6 +6,7 @@ const uid2 = require("uid2");
 const User = require("../models/User");
 
 router.post("/user/signup", async (req, res) => {
+  console.log(req.body);
   const { email, username, password, newsletter } = req.body;
   try {
     if (username === "" || email === "" || password === "") {

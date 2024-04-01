@@ -2,10 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
+const fileUpload = require("express-fileupload");
+const Offer = require("./models/Offer");
 const cors = require("cors");
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -21,6 +23,7 @@ app.get("/", (req, res) => {
 
 const userRoutes = require("./routes/user");
 const offerRoutes = require("./routes/offer");
+const isAuthenticated = require("./middleware/isAuthenticated");
 app.use(userRoutes);
 app.use(offerRoutes);
 

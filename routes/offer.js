@@ -145,4 +145,69 @@ router.get("/offer/:id", async (req, res) => {
   }
 });
 
+router.delete("/offer/:id", isAunthenticated, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const deleteOffer = await Offer.findByIdAndDelete(id);
+    if (deleteOffer) {
+      return res
+        .status(200)
+        .json({ message: "Your offer has been successfully deleted" });
+    } else {
+      return res.status(400).json({ message: "The offer does not exist" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+router.put(
+  "/offer/modify/:id",
+  isAunthenticated,
+  fileUpload(),
+  async (req, res) => {
+    try {
+      const { title, description, price, condition, city, brand, size, color } =
+        req.body;
+      if (
+        !title ||
+        !description ||
+        !price ||
+        !condition ||
+        !city ||
+        !brand ||
+        !size ||
+        !color
+      ) {
+        return res
+          .status(400)
+          .json({
+            message: "Missing parameters.Please complete all the fields",
+          });
+      }
+      const id = req.params.id;
+      const modifiedOffer = await Offer.findByIdAndUpdate(id);
+
+      if (!modifiedOffer) {
+        return res.status(400).json({ message: "Offer not Found" });
+      }
+      modifiedOffer.product_name = title;
+      modifiedOffer.product_description = description;
+      modifiedOffer.product_price = price;
+      modifiedOffer.product_details = [
+        { marque: brand },
+        { taille: size },
+        { état: condition },
+        { couleur: color },
+        { city: city },
+      ];
+
+      await modifiedOffer.save();
+      return res.status(200).json({ message: "Your offer has been changed" });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+);
+
 module.exports = router;
