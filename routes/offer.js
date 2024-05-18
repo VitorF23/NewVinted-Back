@@ -101,7 +101,7 @@ router.get("/offers", async (req, res) => {
       }
     }
 
-    let limit = 5;
+    let limit = 20;
     if (req.query.limit) {
       limit = req.query.limit;
     }
@@ -179,11 +179,9 @@ router.put(
         !size ||
         !color
       ) {
-        return res
-          .status(400)
-          .json({
-            message: "Missing parameters.Please complete all the fields",
-          });
+        return res.status(400).json({
+          message: "Missing parameters.Please complete all the fields",
+        });
       }
       const id = req.params.id;
       const modifiedOffer = await Offer.findByIdAndUpdate(id);
