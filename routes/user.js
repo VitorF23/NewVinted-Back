@@ -4,8 +4,14 @@ const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
 const uid2 = require("uid2");
 const User = require("../models/User");
+const fileUpload = require("express-fileupload");
+const cloudinary = require("cloudinary").v2;
 
-router.post("/user/signup", async (req, res) => {
+const convertToBase64 = (file) => {
+  return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
+};
+
+router.post("/user/signup", fileUpload(), async (req, res) => {
   console.log(req.body);
   const { email, username, password, newsletter } = req.body;
   try {
@@ -28,6 +34,7 @@ router.post("/user/signup", async (req, res) => {
       const signup = new User({
         account: {
           username: username,
+          avatar: Object,
         },
         email: email,
         token: token,
@@ -35,13 +42,25 @@ router.post("/user/signup", async (req, res) => {
         salt: salt,
         newsletter: newsletter,
       });
+      if (req.files) {
+        const convertedPicture = convertToBase64(req.files.avatar);
+        const uploadResult = await cloudinary.uploader.upload(
+          convertedPicture,
+          {
+            folder: `/vinted/avatar/${signup._id}`,
+          }
+        );
+        signup.account.avatar = uploadResult;
+      }
 
       await signup.save();
+
       return res.status(200).json({
         _id: signup._id,
         token: signup.token,
         account: {
           username: signup.account.username,
+          avatar: signup.account.avatar,
         },
       });
     }
