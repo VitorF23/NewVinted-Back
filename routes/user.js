@@ -77,7 +77,9 @@ router.post("/user/login", async (req, res) => {
     }
     const userFound = await User.findOne({ email: email });
     if (!userFound) {
-      return res.status(400).json("Access Denied");
+      return res
+        .status(400)
+        .json("Votre adresse e-mail ou votre mot de passe est incorrect");
     }
 
     const receivedPassword = password;
