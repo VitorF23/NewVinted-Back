@@ -2,8 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
-const fileUpload = require("express-fileupload");
-const Offer = require("./models/Offer");
 const cors = require("cors");
 const app = express();
 app.use(express.json());
@@ -23,9 +21,10 @@ app.get("/", (req, res) => {
 
 const userRoutes = require("./routes/user");
 const offerRoutes = require("./routes/offer");
-const isAuthenticated = require("./middleware/isAuthenticated");
+const payment = require("./routes/payment");
 app.use(userRoutes);
 app.use(offerRoutes);
+app.use(payment);
 
 app.all("*", (req, res) => {
   res.status(500).json("Route not Found");

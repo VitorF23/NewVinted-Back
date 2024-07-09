@@ -103,11 +103,11 @@ router.get("/offers", async (req, res) => {
 
     let limit = 20;
     if (req.query.limit) {
-      limit = req.query.limit;
+      limit = Number(req.query.limit);
     }
     let page = 1;
     if (req.query.page) {
-      page = req.query.page;
+      page = Number(req.query.page);
     }
 
     const skip = (page - 1) * limit;
@@ -122,8 +122,11 @@ router.get("/offers", async (req, res) => {
       .skip(skip);
 
     const count = await Offer.countDocuments(filters);
+    const totalPages = Math.ceil(count / limit);
 
-    return res.status(200).json({ count: count, offers: offers });
+    return res
+      .status(200)
+      .json({ count: count, offers: offers, totalPages: totalPages });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
